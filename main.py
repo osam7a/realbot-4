@@ -8,8 +8,7 @@ from keep_alive import keep_alive
 client = commands.Bot(command_prefix="r!", allowed_mentions=discord.AllowedMentions(everyone=False, roles=False, users=True, replied_user=True), help_command=None)
 maintainence=False
 
-def a():
-  pass
+
 @client.command()
 async def maintainence(ctx, boolean):
   maintainence=bool(boolean)
