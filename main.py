@@ -1,12 +1,11 @@
 import discord
 from discord.ext import commands
 import os
+from cogs.help import HelpCommand
 from keep_alive import keep_alive
-from dislash import InteractionClient, Option
 
-client = commands.Bot(command_prefix="r!")
-guild_ids=[892792256002682920]
-inter_client = InteractionClient(client)
+
+client = commands.Bot(command_prefix="r!", allowed_mentions=discord.AllowedMentions(everyone=False, roles=False, users=True, replied_user=True), help_command=None)
 maintainence=False
 
 @client.command()
@@ -19,8 +18,10 @@ async def on_ready():
   print("[--Running Cogs--]")
   client.load_extension("cogs.fun")
   client.load_extension("cogs.misc")
-  client.load_extension("cogs.slashcommands")
+  client.load_extension("cogs.help")
   client.load_extension("cogs.listeners")
+  client.load_extension("cogs.error")
+  client.load_extension("cogs.economy")
   for cog in client.cogs:
     print(cog)
   print(f"[--System Info--]\nBot Name: {client.user}\nBot ID: {client.user.id}") 
@@ -42,22 +43,7 @@ async def reload(ctx, cog):
   else:
     await ctx.reply("You do not have permissions to do that.")  
 
-@inter_client.slash_command(name="reload", description="Reloads an extension", options=[Option("cog", "The cog you want to load")], guild_ids=guild_ids)
-async def reload(inter, cog):
-  if inter.author.id == 761159873194491915 or inter.author.id == 473125594410909696:
-    try:
-      client.unload_extension(f"cogs.{cog}")
-      client.load_extension(f"cogs.{cog}")
-      await inter.reply(f"Reloaded extension {cog}", ephemeral=True)
-    except commands.ExtensionNotLoaded:
-      client.load_extension(f"cogs.{cog}")
-      await inter.reply(f"Loaded extension {cog}", ephemeral=True)
-    except commands.ExtensionNotFound:
-      await inter.reply(f"No cog with name {cog}", ephemeral=True)
-    except commands.ExtensionFailed:
-      await inter.reply(f"```diff\n- {commands.ExtensionFailed.original}\n```", ephemeral=True)      
-  else:
-    await inter.reply("You do not have permissions to do that.", ephemeral=True) 
+ 
 
 @client.event
 async def on_command(ctx):
