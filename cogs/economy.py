@@ -15,6 +15,7 @@ class Economy(commands.Cog):
     with open("./dicts/economyshop.json", "r") as f:
       loadshop=json.load(f)
     self.shop = loadshop
+
     
   @commands.command(aliases=['register', 'reg'])
   async def start(self, ctx):
@@ -356,9 +357,11 @@ class Economy(commands.Cog):
         bet = load[str(ctx.author.id)]['balance']
       else:  
         bet = 50000
-    if bet < 500:
+    if load[str(ctx.author.id)]['balance']-int(bet) < 0:
+      return await emb(ctx, "Insiffecunt funds!", f"You tried betting {bet} for a coinflip match, but you only have {load[str(ctx.author.id)]['balance']}!", discord.Colour.red())    
+    if int(bet) < 500:
       return await emb(ctx, "Too low bet!", "The bet you input is too low! The minimum is 500", discord.Colour.red())
-    if bet > 50000:
+    if int(bet) > 50000:
       return await emb(ctx, "Too high bet!", "The bet you input is too high! The minimum is 50k", discord.Colour.red())  
     
     if f"{ctx.author.id}" not in load:
@@ -368,14 +371,14 @@ class Economy(commands.Cog):
     await asyncio.sleep(2)  
     b=random.randint(0, 100)
     if b < 50:
-      load[f'{ctx.author.id}']['balance'] += bet*2  
-      embed=discord.Embed(title=f"{a}!", description=f"You were lucky and won the bet! You gained {self.emoji}{bet*2}.", color=Assests.color)
+      load[f'{ctx.author.id}']['balance'] += int(bet)*2  
+      embed=discord.Embed(title=f"{a}!", description=f"You were lucky and won the bet! You gained {self.emoji}{int(bet)*2}.", color=Assests.color)
       await msg.edit(embed=embed)
     elif b > 50:
-      if load[f'{ctx.author.id}']['balance']-bet < 0:
+      if load[f'{ctx.author.id}']['balance']-int(bet) < 0:
         load[f'{ctx.author.id}']['balance']-load[f'{ctx.author.id}']['balance']
       else: 
-        load[f'{ctx.author.id}']['balance'] -= bet
+        load[f'{ctx.author.id}']['balance'] -= int(bet)
       embed=discord.Embed(title=f"{'heads' if a == 'tails' else 'tails'}..", description=f"You got unlucky and you lost the bet :/ You lost {self.emoji}{bet}", color=discord.Colour.purple())
       await msg.edit(embed=embed)  
     with open("./dicts/economy.json", "w") as f:

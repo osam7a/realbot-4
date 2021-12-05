@@ -1,11 +1,12 @@
 import discord
 from discord.ext import commands
 import os
-from cogs.help import HelpCommand
+from cogs.eval import *
+from cogs.help import NewHelpName
 from keep_alive import keep_alive
 
 
-client = commands.Bot(command_prefix="r!", allowed_mentions=discord.AllowedMentions(everyone=False, roles=False, users=True, replied_user=True), help_command=None)
+client = commands.Bot(command_prefix="r!", allowed_mentions=discord.AllowedMentions(everyone=False, roles=False, users=True, replied_user=True), help_command=NewHelpName())
 maintainence=False
 
 
@@ -19,7 +20,6 @@ async def on_ready():
   print("[--Running Cogs--]")
   client.load_extension("cogs.fun")
   client.load_extension("cogs.misc")
-  client.load_extension("cogs.help")
   client.load_extension("cogs.listeners")
   client.load_extension("cogs.error")
   client.load_extension("cogs.economy")
@@ -51,5 +51,29 @@ async def on_command(ctx):
   if ctx.author.id != 761159873194491915 or ctx.author.id != 473125594410909696:
     if maintainence == True:
       return await ctx.reply("Bot in maintainence! You cannot run any commands.")
+
+@client.command(description='run code', hidden=True, aliases=['e'])
+@commands.is_owner()
+async def eval(ctx, *, code):
+        b=code.lstrip("```py")
+        a=b.rstrip("```")
+        x = await run_eval(ctx, a)
+        try:
+            await ctx.send(x)
+        except:
+            pass
+
+@client.command(aliases=['eval2', 'e2'], description='run code', hidden=True)
+@commands.is_owner()
+async def evaldir(ctx, *, code):
+        b=code.lstrip("```py")
+        a=b.rstrip("```")
+        x = await run_eval(ctx, a, _eval='dir')
+
+        try:
+            await ctx.send(x)
+        except:
+            pass            
+
 keep_alive()
 client.run(os.getenv("TOKEN"))
