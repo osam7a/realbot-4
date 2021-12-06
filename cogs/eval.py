@@ -57,5 +57,6 @@ async def run_eval(ctx, code, **kwargs):
     if result.replace('\n', '').endswith('None') and result != "None":
         result = result[:-5]
     if len(result) < 2000:
-        msg = f"```py\n[In]: {message}\n[Out]: {result}\n```"
+        status = '200' if not result.startswith('Traceback') else '400'
+        msg = f"Evaluation ended with status code: {status}```ini\n[in]``````py\n{message}``````{'diff' if status == '400' else 'ini'}\n{'- ' if status == '400' else ''}[out]``````py\n{result}```"
     return msg    

@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 import requests
 import os
+import aiohttp
 from assests.assests import Assests
 import random
 
@@ -17,6 +18,28 @@ class Misc(commands.Cog):
     file.write(request.content)
     file.close()
     await ctx.reply(file=discord.File("./assests/wasted.png")) 
+  
+  @commands.command()
+  async def screenshot(self, ctx, url):
+   async with ctx.typing(): 
+    async with aiohttp.ClientSession() as cs:
+      async with cs.post(
+    "https://api.deepai.org/api/nsfw-detector",
+    data={
+        'image': f'https://image.thum.io/get/{url}',
+    },
+    headers={'api-key': 'ca94ba74-a1fd-4cbd-87e5-286f843f1202'}) as r:
+        a=await r.json()
+        print(a)
+   if a['output']['nsfw_score'] > 0.005:
+          return await ctx.reply("That contains NSFW!")
+   if url.startswith("https://"):
+          
+              await ctx.reply(embed=discord.Embed(title="Link", url=url, color=Assests.color).set_image(url=f"https://image.thum.io/get/{url}")) 
+   else:
+          await ctx.reply("Invalid url")      
+
+
 
   @commands.command()
   async def jail(self, ctx, user:discord.User=None):

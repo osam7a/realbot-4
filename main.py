@@ -4,7 +4,7 @@ import os
 from cogs.eval import *
 from cogs.help import NewHelpName
 from keep_alive import keep_alive
-
+from assests.assests import Assests
 
 client = commands.Bot(command_prefix="r!", allowed_mentions=discord.AllowedMentions(everyone=False, roles=False, users=True, replied_user=True), help_command=NewHelpName())
 maintainence=False
@@ -59,9 +59,9 @@ async def eval(ctx, *, code):
         a=b.rstrip("```")
         x = await run_eval(ctx, a)
         try:
-            await ctx.send(x)
-        except:
-            pass
+          await ctx.send(embed=discord.Embed(title="Evaluation complete", color=Assests.color, description=x))
+        except: pass  
+  
 
 @client.command(aliases=['eval2', 'e2'], description='run code', hidden=True)
 @commands.is_owner()
@@ -71,7 +71,7 @@ async def evaldir(ctx, *, code):
         x = await run_eval(ctx, a, _eval='dir')
 
         try:
-            await ctx.send(x)
+            await ctx.send(embed=discord.Embed(title="", color=Assests.color, description=x))
         except:
             pass            
 
