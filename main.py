@@ -5,7 +5,7 @@ from cogs.eval import *
 from cogs.help import NewHelpName
 from keep_alive import keep_alive
 from assests.assests import Assests
-
+from assests.paginator import Paginator
 client = commands.Bot(command_prefix="r!", allowed_mentions=discord.AllowedMentions(everyone=False, roles=False, users=True, replied_user=True), help_command=NewHelpName())
 maintainence=False
 
@@ -59,7 +59,8 @@ async def eval(ctx, *, code):
         a=b.rstrip("```")
         x = await run_eval(ctx, a)
         try:
-          await ctx.send(embed=discord.Embed(title="Evaluation complete", color=Assests.color, description=x))
+          d=Paginator(ctx)
+          await d.paginate(content=x, name=ctx.author)
         except: pass  
   
 
@@ -71,7 +72,8 @@ async def evaldir(ctx, *, code):
         x = await run_eval(ctx, a, _eval='dir')
 
         try:
-            await ctx.send(embed=discord.Embed(title="", color=Assests.color, description=x))
+            d=Paginator(ctx)
+            await d.paginate(content=x, name=ctx.author)
         except:
             pass            
 

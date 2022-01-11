@@ -30,6 +30,9 @@ class Fun(commands.Cog):
   async def reddit(self, ctx, subreddit, sort=None):
     if sort == None:
       sort = "hot"
+    blacklistedsubreddits = ['nsfw', 'porn', 'sex', 'sexy', 'blowjobs', 'hot', 'fuck'] 
+    if subreddit in blacklistedsubreddits:
+      return await ctx.reply("NSFW is not allowed.") 
     async with aiohttp.ClientSession() as cs:
       async with cs.get(f"https://www.reddit.com/r/{subreddit}/new.json?sort={sort}&nsfw=false") as r:
         res = await r.json()

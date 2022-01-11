@@ -87,6 +87,7 @@ class Paginator:
             e, u = await self.ctx.bot.wait_for('reaction_add', check=check)
 
         else:
+            await msg.delete()
             return await msg.clear_reactions()
 
     async def edit(self, **kwargs):

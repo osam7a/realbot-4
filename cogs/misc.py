@@ -20,6 +20,13 @@ class Misc(commands.Cog):
     await ctx.reply(file=discord.File("./assests/wasted.png")) 
   
   @commands.command()
+  @commands.has_permissions(manage_messages=True)
+  async def purge(self, ctx, limit:int):
+    await ctx.channel.purge(limit=limit)
+    await ctx.send("Purged %s messages" % limit, delete_after=3)
+
+
+  @commands.command()
   async def screenshot(self, ctx, url):
    async with ctx.typing(): 
     async with aiohttp.ClientSession() as cs:

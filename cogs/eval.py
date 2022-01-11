@@ -13,7 +13,7 @@ def clean_code(content:str):
 
 async def run_eval(ctx, code, **kwargs):
     _eval = kwargs.get('_eval')
-
+    msg = ''
     local_variables = {
         "discord": discord,
         "commands": commands, 
@@ -58,5 +58,5 @@ async def run_eval(ctx, code, **kwargs):
         result = result[:-5]
     if len(result) < 2000:
         status = '200' if not result.startswith('Traceback') else '400'
-        msg = f"Evaluation ended with status code: {status}```ini\n[in]``````py\n{message}``````{'diff' if status == '400' else 'ini'}\n{'- ' if status == '400' else ''}[out]``````py\n{result}```"
+        msg = f"Evaluation ended with status code: {status}``````ini\n[in]``````py\n{message}``````{'diff' if status == '400' else 'ini'}\n{'- ' if status == '400' else ''}[out]``````yaml\n{result}"
     return msg    

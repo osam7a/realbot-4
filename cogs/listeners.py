@@ -3,7 +3,7 @@ from discord.ext import commands
 import json
 from assests.assests import Assests
 from discord import Webhook, RequestsWebhookAdapter
-
+import re
 
 class Listeners(commands.Cog):
     def __init__(self, bot):
@@ -49,6 +49,7 @@ class Listeners(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, msg):
+      if msg.author.bot: return
       if msg.channel.id == 899258763121405974:
         if len(msg.content.split()) > 1:
           await msg.delete()
@@ -59,25 +60,36 @@ class Listeners(commands.Cog):
           f=open("./dicts/currcount.json", "r")
           load=json.load(f)
           msgnum=int(msg.content)
-          if load['lastauthor'] == msg.author.id:
-            await msg.delete()
+          
           if load['currentcount'] + 1 == msgnum:
+            if load['lastauthor'] == str(msg.author.id):
+             print(msg.author)
+             await msg.delete()
+             return
             load['currentcount'] += 1
             f2=open("./dicts/currcount.json", "w")
-            load['lastauthor'] = msg.author.id
+            load['lastauthor'] = str(msg.author.id)
             json.dump(load, f2)
             return
             
           else:
+            if load['lastauthor'] == str(msg.author.id):
+             print(msg.author)
+             await msg.delete()
+             return
+            load['currentcount'] += 1
+            load['lastauthor'] = str
+            (msg.author.id) 
+            f2=open("./dicts/currcount.json", "w")
+            json.dump(load, f2) 
             await msg.delete()  
             webhook = Webhook.from_url('https://discord.com/api/webhooks/917478130254479460/GwUNZesTyt5UVArRNRaCLMf2EY5v86TizZDvwoJ6Xbqxtb3bQ8R7o49gPY9xNQxNGA0u', adapter=RequestsWebhookAdapter())
             await webhook.send(username=msg.author.name, avatar_url=msg.author.avatar_url, content=load['currentcount']+1)
-            load['currentcount'] += 1
-            load['lastauthor'] = msg.author.id
-            f2=open("./dicts/currcount.json", "w")
-            json.dump(load, f2)
+            
+            return
         except:
           await msg.delete()
+          
         
 
 def setup(bot):

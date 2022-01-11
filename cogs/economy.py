@@ -268,6 +268,10 @@ class Economy(commands.Cog):
         return await ctx.reply("That item is already in the shop!")
       with open("./dicts/economyshop.json", "r") as f:
         load=json.load(f)  
+      try:
+        emoji = self.emojis[emoji.strip(':')]
+      except KeyError:
+        emoji = emoji    
       load[id] = {"price":price, "description":description, "emoji":emoji}
       with open("./dicts/economyshop.json", "w") as f:
         json.dump(load, f)
@@ -336,7 +340,7 @@ class Economy(commands.Cog):
     load[f'{ctx.author.id}']['balance'] += self.shop.get(item).get('price')*amount
     if load[f'{ctx.author.id}']['inventory'][item]['amount']-amount < 0:
       return await emb(ctx, "Insefficunt items", "You do not have that much items!", discord.Colour.red())
-    if load[f'{ctx.author.id}']['inventory'][item]['amount'] == 1:
+    if load[f'{ctx.author.id}']['inventory'][item]['amount'] == 1 or amount == load[str(ctx.author.id)]['inventory'][item]['amount']:
         load[f'{ctx.author.id}']['inventory'].pop(item)
     else:  
         load[f'{ctx.author.id}']['inventory'][item]['amount'] -= amount
@@ -419,11 +423,41 @@ class Economy(commands.Cog):
     await emb(ctx, "Paid!", f"You payed {user.mention} {self.emoji}{amount}! You now have {self.emoji}{load[str(ctx.author.id)]['balance']}", Assests.color )  
     file=open("./dicts/economy.json", "w")
     json.dump(load, file)
-
-
           
-
-      
+  @commands.command()
+  @commands.cooldown(1, 60*10, commands.BucketType.user)
+  async def fish(self, ctx):
+    with open("./dicts/economy.json", "r") as f:
+      load = json.load(f)
+    if f"{ctx.author.id}" not in load:
+        return await ctx.reply("You have not registered yet! Do r!start to get into our database.") 
+    if "fishing pole" not in load[str(ctx.author.id)]['inventory']:
+      return await emb(ctx, "Insefficunt items!", "Hey! You dont have a fishing pole to fish!", discord.Colour.red())
+    a = list(self.shop.keys())
+    a.append(random.randint(0, 17500)) 
+    a.append("nothing") 
+    win = random.choice(a)      
+    if type(win) == int and not win == "nothing":
+      load[str(ctx.author.id)]['balance'] += win
+      with open("./dicts/economy.json", "w") as f:
+        json.dump(load, f)
+      return await emb(ctx, f"You Caught Something!", f"You caught a bag of money :moneybag:!, You were fishing and suddenly you catch {self.emoji}{win}!", Assests.color) 
+    elif type(win) == str and not win == "nothing":
+      amount = random.randint(1, 2)
+      if win not in load[str(ctx.author.id)]['inventory']:
+        load[str(ctx.author.id)]['inventory'][win] = {"amount":amount, "id":win, "name":f"{self.shop.get(win).get('emoji')} {win}"} 
+      else:
+        if win == "padlock":
+          if load[str(ctx.author.id)]['inventory'][win]['amount'] == 2:
+            return await emb(ctx, "Sucks to be you!", "You went to the lake and went back with nothing! I guess your having nothing for dinner...", Assests.color) 
+          elif load[str(ctx.author.id)]['inventory'][win]['amount'] == 1 and amount == 2:
+            load[str(ctx.author.id)]['inventory'][win]['amount'] += 1  
+        load[str(ctx.author.id)]['inventory'][win]['amount'] += amount
+      with open("./dicts/economy.json", "w") as f:
+        json.dump(load, f)
+      return await emb(ctx, f"You Caught Something!", f"You were fishing and you found {amount} of {win}! Check your inventory by r!inventory", Assests.color)
+    elif win == "nothing":
+      return await emb(ctx, "Sucks to be you!", "You went to the lake and went back with nothing! I guess your having nothing for dinner...", Assests.color)      
 
 
       
